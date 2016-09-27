@@ -163,20 +163,19 @@ def haymarket_and_leith
   # Give the company and num of the services that connect stops
   # 115 and 137 ('Haymarket' and 'Leith')
   execute(<<-SQL)
-    -- The following has repeats. Not sure why.
-    -- SELECT
-    --   a.company,
-    --   a.num
-    -- FROM
-    --   stops AS stopa
-    --     JOIN
-    --       routes AS a ON (a.stop_id = stopa.id)
-    --     JOIN
-    --       routes AS b ON (a.company = b.company AND a.num = b.num)
-    --     JOIN
-    --       stops AS stopb ON (b.stop_id = stopb.id)
-    -- WHERE
-    --   stopa.name = 'Haymarket' AND stopb.name = 'Leith'
+    SELECT DISTINCT
+      a.company,
+      a.num
+    FROM
+      stops AS stopa
+        JOIN
+          routes AS a ON (a.stop_id = stopa.id)
+        JOIN
+          routes AS b ON (a.company = b.company AND a.num = b.num)
+        JOIN
+          stops AS stopb ON (b.stop_id = stopb.id)
+    WHERE
+      stopa.name = 'Haymarket' AND stopb.name = 'Leith'
   SQL
 end
 
@@ -200,5 +199,17 @@ def craiglockhart_to_sighthill
   # Sighthill. Show the bus no. and company for the first bus, the name of the
   # stop for the transfer, and the bus no. and company for the second bus.
   execute(<<-SQL)
+    -- A starts at Craiglockhart
+    -- B finishes at a stop
+    -- C starts at the stop B finished at
+    -- D finishes at Sighthill
+
+    -- Map stops to each of the following
+    -- A starts
+    -- B joins, company = company, num = num
+    -- C joins, c.stop_id = b.stop_id
+    -- D joins, company = compnay, num = num
+    -- Where stopa = 'Craiglockhart'
+    -- Where stopd = 'Sighthill'
   SQL
 end
