@@ -62,6 +62,10 @@ def teachers_and_mobiles
   # 444 2266' if no number is given. Show teacher name and mobile
   # #number or '07986 444 2266'
   execute(<<-SQL)
+    SELECT
+      teachers.name, COALESCE(teachers.mobile, '07986 444 2266')
+    FROM
+      teachers
   SQL
 end
 
@@ -70,6 +74,12 @@ def teachers_and_depts
   # department name. Use the string 'None' where there is no
   # department.
   execute(<<-SQL)
+    SELECT
+      teachers.name, COALESCE(depts.name, 'None')
+    FROM
+      teachers
+      LEFT JOIN
+        depts ON depts.id = teachers.dept_id
   SQL
 end
 
@@ -78,6 +88,12 @@ def num_teachers_and_mobiles
   # mobile phones.
   # NB: COUNT only counts non-NULL values.
   execute(<<-SQL)
+  SELECT
+    COUNT(COALESCE(teachers.name, 'None')), COUNT(teachers.mobile)
+  FROM
+    teachers
+    LEFT JOIN
+      depts ON depts.id = teachers.dept_id
   SQL
 end
 
